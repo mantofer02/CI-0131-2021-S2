@@ -1,0 +1,47 @@
+---
+title: "Proyecto de Kickstarter"
+output:
+  html_document:
+    df_print: paged
+---
+
+1.  Se procede a obtener las librerías a utilizar
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(tidyr)
+library(reshape2)
+library(RColorBrewer)
+library(ggrepel)
+```
+
+2.  Se realiza la lectura del archivo de kickstarter
+
+```{r}
+df <- as_tibble(read.csv(file = 'Datosks.csv'  , header=T, encoding = "UTF-8"))
+glimpse(df)
+```
+
+3.  Se procede a analizar la correctitud en que obtuvo las variables buscando valores nulos
+
+```{r}
+# Valores que no aplica
+sum(is.na(df))
+df %>% summarise_all(~ sum(is.na(.)))
+df %>% filter(is.na(df$usd.pledged))
+# Comprobación del caracter 
+df %>% filter( grepl(',',df$name) ) 
+# Comprobacion de espacios
+espacios <-  as.data.frame(which(df=="", arr.ind=TRUE))
+df[espacios$row,]
+espacios <-  as.data.frame(which(df==" ", arr.ind=TRUE))
+df[espacios$row,]
+
+# Falta insepccionar por esos 4 filas faltantes
+
+
+```
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
