@@ -44,4 +44,29 @@ df[espacios$row,]
 
 ```
 
+```{r}
+df <- as_tibble(df)
+
+dfTime <- df%>%
+  mutate(
+    deadline = strptime(deadline, format = "%Y-%m-%d"),
+    launched = strptime(launched, format = "%Y-%m-%d"),
+    days = as.numeric(deadline - launched),
+    group_range =cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+    )%>%
+  select(days,name,group_range)#%>% group_by(group_range)%>%summarise(count = length(group_range))
+dfTime
+#%>%summarise(count = length(group_range))
+```
+
+```{r}
+
+daysGroup <- 
+  cut(dfTime$days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+aggregate(days ~ daysGroup, dfTime, sum)
+
+
+
+```
+
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
