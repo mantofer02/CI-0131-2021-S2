@@ -53,26 +53,101 @@ df[espacios$row,]
 ```
 
 ```{r}
-df <- as_tibble(df)
 
 dfTime <- df%>%
   mutate(
     deadline = strptime(deadline, format = "%Y-%m-%d"),
     launched = strptime(launched, format = "%Y-%m-%d"),
     days = as.numeric(deadline - launched),
-    season_days=cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+    season_days=cut(days,c( seq (0,120,by = 25),Inf ) , include.lowest = TRUE)
     )%>%
   select(days,name,season_days)%>% group_by(season_days)%>%summarise(count = length(season_days))
 dfTime
 ```
 
+4.  Se procede a obtener las variables de interés para el proyecto así como el filtro de las variables innecesarias
+
 ```{r}
 
-daysGroup <- 
-  cut(dfTime$days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
-aggregate(days ~ daysGroup, dfTime, sum)
+dfFinal <- df%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)%>%filter
 
+dfFinal <- dfFinal%>%
+   mutate(
+    deadline = strptime(deadline, format = "%Y-%m-%d"),
+    launched = strptime(launched, format = "%Y-%m-%d"),
+    days = as.numeric(deadline - launched)
+    )%>%
+  subset(select = -c (deadline,launched))%>% 
+  subset(state=="failed" | state=="successful")
 
+dfFinal%>%group_by(state)%>%summarise(count = length(state))
+  
+# dfTime <- dfFinal%>%
+#   mutate(
+#     deadline = strptime(deadline, format = "%Y-%m-%d"),
+#     launched = strptime(launched, format = "%Y-%m-%d"),
+#     days = as.numeric(deadline - launched),
+#     season_days=cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+#     )%>% group_by(season_days)%>%summarise(count = length(season_days))
+# dfTime
+# 
+
+```
+
+5.  Precedemos a hacer el primer plot por categorias
+
+```{r}
+#install.packages("plotly")
+#library(plotly)
+
+dfFinal$state <-factor(dfFinal$state)
+grafico <- dfFinal %>%
+  ggplot(aes(x = "", fill = state))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("Categorias") + 
+  facet_wrap(. ~ main_category) + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+grafico
+```
+
+```{r}
+dfFinal$state <-factor(dfFinal$state)
+grafico1 <- dfFinal %>%
+  ggplot(aes(x = "", fill = state))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("General") + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+
+grid.arrange(grafico1,grafico, ncol=2)
+```
+
+```{r}
+
+graficoBarras<- dfFinal%>%group_by(main_category)%>%
+   summarise(count = length(main_category))%>%
+   ggplot(aes(x = reorder(main_category,count,decreasing=FALSE),y = count))+geom_col()+
+   theme(axis.text.x = element_text(angle=30, hjust=1, vjust = 1))+ coord_flip()
+
+grid.arrange(grafico,graficoBarras, ncol=2)
+
+```
+
+```{r}
+ggplot(dfFinal) +
+  geom_point(aes(x=usd_goal_real, y=days, color = state))+ 
+  facet_wrap(. ~ main_category)+ scale_x_log10()
+```
+
+```{r}
+ggplot(dfFinal) +
+  geom_point(aes(x=usd_goal_real, y=days, color = state))+ scale_x_log10()
+```
+
+```{r}
 
 ```
 
