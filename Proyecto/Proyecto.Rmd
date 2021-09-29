@@ -20,8 +20,16 @@ library(ggrepel)
 2.  Se realiza la lectura del archivo de kickstarter
 
 ```{r}
-df <- as_tibble(read.csv(file = 'Datosks.csv'  , header=T, encoding = "UTF-8"))
+y <- readLines('Datosks.csv')
+y <- gsub("\"\"N,0\"\"\"\"\"\"", 'undefined', y)
+y <- gsub(",\"(.*)\",", ',,', y)
+y <- gsub("\"",'', y)
+y <- gsub(";",'', y)
+y<- textConnection(y)
+df <- as_tibble(read.csv( y  , header=T, encoding = "UTF-8"),comment.char ="")
+close(y)
 glimpse(df)
+y <- readLines('Datosks.csv')
 ```
 
 3.  Se procede a analizar la correctitud en que obtuvo las variables buscando valores nulos
@@ -52,11 +60,10 @@ dfTime <- df%>%
     deadline = strptime(deadline, format = "%Y-%m-%d"),
     launched = strptime(launched, format = "%Y-%m-%d"),
     days = as.numeric(deadline - launched),
-    group_range =cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+    season_days=cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
     )%>%
-  select(days,name,group_range)#%>% group_by(group_range)%>%summarise(count = length(group_range))
+  select(days,name,season_days)%>% group_by(season_days)%>%summarise(count = length(season_days))
 dfTime
-#%>%summarise(count = length(group_range))
 ```
 
 ```{r}
