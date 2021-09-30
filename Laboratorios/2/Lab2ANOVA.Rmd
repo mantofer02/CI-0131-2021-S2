@@ -15,14 +15,14 @@ install.packages("tidyverse")
 library(tidyverse)
 ```
 
-# cargamos datos
+### cargamos datos
 
 ```{r}
 my_data <- PlantGrowth
 my_data
 ```
 
-# Mostrar una muestra aleatoria
+### Mostrar una muestra aleatoria
 
 ```{r}
 set.seed (420)
@@ -33,7 +33,7 @@ En la terminología R, la columna "grupo" se llama factor y las
 diferentes categorías ("ctr", "trt1", "trt2") se denominan niveles de
 factor. Los niveles están ordenados alfabéticamente.
 
-# Mostrar los niveles
+### Mostrar los niveles
 
 ```{r}
 levels(my_data$group)
@@ -47,10 +47,16 @@ my_data$group <- ordered(my_data$group, levels = c("ctrl", "trt1", "trt2"))
 group_by(my_data, group) %>% summarise( count = n(), mean = mean(weight, na.rm = TRUE), sd = sd(weight, na.rm = TRUE) )
 ```
 
-# Box plot
+### Gráfico Box plot
 
 ```{r}
-boxplot(weight ~ group, data = my_data, xlab = "Treatment", ylab = "Weight", frame = FALSE, col = c("#00AFBB", "#E7B800", "#FC4E07")) # plotmeans library("gplots") plotmeans(weight ~ group, data = my_data, frame = FALSE, xlab = "Treatment", ylab = "Weight", main="Mean Plot with 95% CI")
+boxplot(weight ~ group, data = my_data, xlab = "Treatment", ylab = "Weight", frame = FALSE, col = c("#00AFBB", "#E7B800", "#FC4E07")) 
+```
+
+```{r}
+# plotmeans 
+library("gplots") 
+plotmeans(weight ~ group, data = my_data, frame = FALSE, xlab = "Treatment", ylab = "Weight", main="Mean Plot with 95% CI")
 ```
 
 ```{r}
@@ -115,10 +121,9 @@ interaction.plot(x.factor = my_data$dose, trace.factor = my_data$supp,
 
 ```
 
-La función R
-aov () se puede usar para responder esta pregunta. La función
-summary.aov () se
-utiliza para resumir el modelo de análisis de varianza.
+La función R aov () se puede usar para responder esta pregunta. La
+función summary.aov () se utiliza para resumir el modelo de análisis de
+varianza.
 
 ```{r}
 res.aov2 <- aov(len ~ supp + dose, data = my_data)
