@@ -69,7 +69,7 @@ dfTime
 
 ```{r}
 
-dfFinal <- df%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)%>%filter
+dfFinal <- df%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)
 
 dfFinal <- dfFinal%>%
    mutate(
