@@ -1,6 +1,7 @@
 ---
 title: "Proyecto de Kickstarter"
 output:
+  word_document: default
   html_document:
     df_print: paged
 ---
@@ -53,6 +54,7 @@ df[espacios$row,]
 ```
 
 ```{r}
+totalObservation = nrow(df)
 
 dfTime <- df%>%
   mutate(
@@ -61,7 +63,8 @@ dfTime <- df%>%
     days = as.numeric(deadline - launched),
     season_days=cut(days,c( seq (0,120,by = 25),Inf ) , include.lowest = TRUE)
     )%>%
-  select(days,name,season_days)%>% group_by(season_days)%>%summarise(count = length(season_days))
+  select(days,name,season_days)%>% group_by(season_days)%>%summarise(count =100* length(season_days)/totalObservation)
+
 dfTime
 ```
 
