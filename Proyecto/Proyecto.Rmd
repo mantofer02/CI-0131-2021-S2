@@ -6,7 +6,7 @@ output:
     df_print: paged
 ---
 
-1.  Se procede a obtener las librerías a utilizar
+# Parte 1. Instalación de Librerías
 
 ```{r}
 library(dplyr)
@@ -16,107 +16,131 @@ library(tidyr)
 library(reshape2)
 library(RColorBrewer)
 library(ggrepel)
+library(scales)
 ```
 
-2.  Se realiza la lectura del archivo de kickstarter
+# Parte 2. Lectura y limpieza de Datos
 
 ```{r}
+
 y <- readLines('Datosks.csv')
 y <- gsub("\"\"N,0\"\"\"\"\"\"", 'undefined', y)
 y <- gsub(",\"(.*)\",", ',,', y)
 y <- gsub("\"",'', y)
 y <- gsub(";",'', y)
+
 y<- textConnection(y)
 df <- as_tibble(read.csv( y  , header=T, encoding = "UTF-8"),comment.char ="")
 close(y)
+
+
 glimpse(df)
-y <- readLines('Datosks.csv')
+
+dfFinal <- df%>%subset(usd_goal_real>100.00)%>%subset(state=="failed" | state=="successful")
 ```
 
-3.  Se procede a analizar la correctitud en que obtuvo las variables buscando valores nulos
+# Parte 3. Comprobación de Limpieza
 
 ```{r}
-# Valores que no aplica
+# Comprobación con No Aplica
+
+# Muestra la cantidad de valores nulos
 sum(is.na(df))
+# Muestra la cantidad de valores nulos por columna
 df %>% summarise_all(~ sum(is.na(.)))
+# Muestra las filas con valores nulos
 df %>% filter(is.na(df$usd.pledged))
-# Comprobación del caracter 
+
+
+# Comprobación del caracter para ver si existe alguna fila con el valor ','
 df %>% filter( grepl(',',df$name) ) 
-# Comprobacion de espacios
-espacios <-  as.data.frame(which(df=="", arr.ind=TRUE))
-df[espacios$row,]
-espacios <-  as.data.frame(which(df==" ", arr.ind=TRUE))
-df[espacios$row,]
-
-# Falta insepccionar por esos 4 filas faltantes
-
-
 ```
 
-```{r}
-totalObservation = nrow(df)
+# Parte 4. Proporción de días para proyectos
 
-dfTime <- df%>%
+```{r}
+totalObservation = nrow(dfFinal)
+
+dfTime <- dfFinal%>%
   mutate(
     deadline = strptime(deadline, format = "%Y-%m-%d"),
     launched = strptime(launched, format = "%Y-%m-%d"),
     days = as.numeric(deadline - launched),
-    season_days=cut(days,c( seq (0,120,by = 25),Inf ) , include.lowest = TRUE)
-    )%>%
-  select(days,name,season_days)%>% group_by(season_days)%>%summarise(count =100* length(season_days)/totalObservation)
+    Dias_temporadas=cut(days,c( seq (0,120,by = 25),Inf ) , include.lowest = TRUE)
+    )%>% select(days,Dias_temporadas)%>% 
+  group_by(Dias_temporadas)%>%
+  summarise(Proporción =percent((length(Dias_temporadas)/totalObservation),accuracy = .11))
 
 dfTime
 ```
 
-4.  Se procede a obtener las variables de interés para el proyecto así como el filtro de las variables innecesarias
+# Parte 5. Proporción de dinero
 
 ```{r}
+lseq <- function(from=1, to=1000000, length.out=7) {
+  exp(seq(log(from), log(to), length.out = length.out))
+}
 
-dfFinal <- df%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)
+dfDolars <- dfFinal%>%
+  mutate(
+    Montos=cut(usd_goal_real,c(lseq(1,1000000,7),Inf))
+    )%>%
+  select(usd_goal_real,Montos)%>% 
+  group_by(Montos)%>%
+  summarise(Proporción =percent(length(Montos)/totalObservation,accuracy = .11))
+
+dfDolars
+```
+
+# Parte 6. Proporción de fallos y aciertos
+
+```{r}
+dfFinal%>%group_by(state)%>%summarise(Proporcion = percent((length(state)/totalObservation),accuracy = .11))
+
+
+dfFinal <- dfFinal%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)
+
 
 dfFinal <- dfFinal%>%
-   mutate(
+  mutate(
     deadline = strptime(deadline, format = "%Y-%m-%d"),
     launched = strptime(launched, format = "%Y-%m-%d"),
-    days = as.numeric(deadline - launched)
-    )%>%
-  subset(select = -c (deadline,launched))%>% 
-  subset(state=="failed" | state=="successful")
+    days = as.numeric(deadline - launched))
 
-dfFinal%>%group_by(state)%>%summarise(count = length(state))
-  
-# dfTime <- dfFinal%>%
-#   mutate(
-#     deadline = strptime(deadline, format = "%Y-%m-%d"),
-#     launched = strptime(launched, format = "%Y-%m-%d"),
-#     days = as.numeric(deadline - launched),
-#     season_days=cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
-#     )%>% group_by(season_days)%>%summarise(count = length(season_days))
-# dfTime
-# 
+dfTime <- dfFinal%>%
+  mutate(
+    days = as.numeric(deadline - launched),
+    season_days=cut(days,c( seq (0,120,by = 30),Inf ) , include.lowest = TRUE)
+    )%>% group_by(season_days)%>%summarise(count = length(season_days))
+
 
 ```
 
-5.  Precedemos a hacer el primer plot por categorias
+# Parte 7. Gráfico de categorías
 
 ```{r}
-#install.packages("plotly")
-#library(plotly)
+graficoBarras<- dfFinal%>%group_by(main_category)%>%
+   summarise(count = length(main_category))%>%
+   ggplot(aes(x = reorder(main_category,count,decreasing=FALSE),y = count))+geom_col(fill = "#00BFC4")+ labs(x = "Categoría", y = "Cantidad")+ coord_flip()
+graficoBarras
+```
 
-dfFinal$state <-factor(dfFinal$state)
-grafico <- dfFinal %>%
+# Parte 8. Selección de categorías y gráfico de pastel de éxitos
+
+```{r}
+dfCategorias<-dfFinal%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+dfCategorias$state <-factor(dfCategorias$state)
+
+grafico <- dfCategorias %>%
   ggplot(aes(x = "", fill = state))+
      geom_bar(position = "fill", width = 1) + 
    coord_polar(theta = "y") + 
   xlab("") + 
   ylab("Categorias") + 
-  facet_wrap(. ~ main_category) + 
+  facet_wrap(. ~ main_category,ncol=1) + 
   theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
-grafico
-```
 
-```{r}
-dfFinal$state <-factor(dfFinal$state)
 grafico1 <- dfFinal %>%
   ggplot(aes(x = "", fill = state))+
      geom_bar(position = "fill", width = 1) + 
@@ -128,30 +152,48 @@ grafico1 <- dfFinal %>%
 grid.arrange(grafico1,grafico, ncol=2)
 ```
 
-```{r}
-
-graficoBarras<- dfFinal%>%group_by(main_category)%>%
-   summarise(count = length(main_category))%>%
-   ggplot(aes(x = reorder(main_category,count,decreasing=FALSE),y = count))+geom_col()+
-   theme(axis.text.x = element_text(angle=30, hjust=1, vjust = 1))+ coord_flip()
-
-grid.arrange(grafico,graficoBarras, ncol=2)
-
-```
-
-```{r}
-ggplot(dfFinal) +
-  geom_point(aes(x=usd_goal_real, y=days, color = state))+ 
-  facet_wrap(. ~ main_category)+ scale_x_log10()
-```
-
-```{r}
-ggplot(dfFinal) +
-  geom_point(aes(x=usd_goal_real, y=days, color = state))+ scale_x_log10()
-```
+# Parte 9. Gráfico de dispersión por categorías
 
 ```{r}
 
+dfCategorias<-dfFinal%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+
+fallos <-dfCategorias%>%
+  filter(state == "failed")%>%
+ggplot() +
+  geom_point(aes(x=usd_goal_real, y=days),color ="#F8766D")+
+  facet_wrap(. ~ main_category,ncol = 3)+ scale_x_log10(limits = c(1,1e8))+ labs(x = "Dólares", y = "Días")
+
+aciertos <-dfCategorias%>%
+  filter(state == "successful")%>%
+ggplot() +
+  geom_point(aes(x=usd_goal_real, y=days),color ="#00BFC4")+
+  facet_wrap(. ~ main_category,ncol = 3)+ scale_x_log10(limits = c(1,1e8))+ labs(x = "Dólares", y = "Días")
+
+
+grid.arrange(fallos,aciertos, ncol=1)
 ```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+# Parte 10. Gráfico de dispersión por categorías con división de 100.000 dólares
+
+```{r}
+
+dfCategorias<-dfFinal%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+
+fallos <-dfCategorias%>%
+  filter(state == "failed")%>%
+ggplot() +
+  geom_point(aes(x=usd_goal_real/100000, y=days),color ="#F8766D")+
+  facet_wrap(. ~ main_category,ncol = 3)+ xlim(1,100)+ labs(x = "Dólares \n(Escala = 100.000)", y = "Días")
+
+aciertos <-dfCategorias%>%
+  filter(state == "successful")%>%
+ggplot() +
+  geom_point(aes(x=usd_goal_real/100000, y=days),color ="#00BFC4")+
+  facet_wrap(. ~ main_category,ncol = 3)+ xlim(1,100)+ labs(x = "Dólares \n(Escala = 100.000)", y = "Días")
+
+
+grid.arrange(fallos,aciertos, ncol=1)
+```
