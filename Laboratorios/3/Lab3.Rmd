@@ -1,0 +1,155 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code.
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
+
+```{r}
+body <- read.table("body.txt", header = TRUE)
+```
+
+```{r}
+slr1 <- lm(weight ~ height, data = body)
+summary(slr1) 
+```
+
+```{r}
+plot(weight ~ height, data = body)
+abline(slr1, col = "red")
+```
+
+**Describa: ¿Cómo le parece que le presenta el gráfico resultante (tendencias)?**
+No parece significativa por que los valores entorno a la línea de regresión no parecen poder
+
+```{r}
+plot(x = fitted(slr1), y = resid(slr1), xlab = "Fitted values", ylab = "Residuals")
+abline(h = 0, lty = "dashed")
+```
+
+```{r}
+qqnorm(y = resid(slr1));qqline(y = resid(slr1))
+```
+
+**¿Qué le parece el gráfico QQ? ¿Existe normalidad?
+¿Existen datos atípicos? Justifique su respuesta con base en sus observaciones.**
+
+Sí se ajusta la recta excepto en los extremos,
+
+El intercepto provoca problemos en los extremos.
+
+```{r}
+par(mfrow=c(2,2))
+plot(slr1)
+```
+
+```{r}
+hops <- read.table("hops.txt", header = TRUE)
+summary(hops)
+```
+
+```{r}
+hops
+```
+
+```{r}
+head(hops)
+tail(hops)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(yield ~ temperature, data = hops)
+plot(yield ~ sunshine, data = hops)
+```
+
+```{r}
+plot(yield ~ temperature, data = hops, type = "n")
+points(yield ~ temperature, data = subset(hops, variety == "fuggle"), pch = "F")
+points(yield ~ temperature, data = subset(hops, variety == "hallertau"), pch = "H")
+points(yield ~ temperature, data = subset(hops, variety == "saaz"), pch = "S")
+legend("topright", legend = c("fuggle", "hallertau", "saaz"), pch = c("F", "H", "S"))
+```
+
+```{r}
+fm1 <- lm(yield ~ temperature + sunshine + fuggle.id + hallertau.id, data = hops)
+summary(fm1)
+```
+
+```{r}
+fm2 <- lm(yield ~ temperature + sunshine, data = hops)
+```
+
+```{r}
+anova(fm2, fm1)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(fm1)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+
+plot(resid(fm1) ~ hops$temperature)
+abline(h = 0, lty = "dotted")
+
+plot(resid(fm1) ~ hops$sunshine)
+abline(h = 0, lty = "dotted")
+```
+
+```{r}
+fm3 <- lm(yield ~ temperature + sunshine + I(sunshine^2) + fuggle.id + hallertau.id, data = hops)
+
+summary(fm3)
+```
+
+```{r}
+plot(resid(fm3) ~ hops$sunshine)
+abline(h = 0, lty = "dotted")
+```
+
+```{r}
+fm4 <- lm(yield ~ temperature + sunshine + I(sunshine^2) + I(sunshine^3) + fuggle.id + hallertau.id, data = hops)
+summary(fm4)
+```
+
+```{r}
+plot(resid(fm4) ~ hops$sunshine)
+abline(h = 0, lty = "dotted")
+```
+
+```{r}
+fm1a <- lm(yield ~ temperature + sunshine + variety, data = hops)
+summary(fm1a)
+```
+
+```{r}
+hops$variety<-as.factor(hops$variety) # Verificar si esto esta bien
+contrasts(hops$variety)
+```
+
+```{r}
+hops.subset <- subset(hops, sunshine > 35) # remove the three data points with sunshine < 35
+
+fm5 <- lm(yield ~ temperature + sunshine + variety, data = hops.subset)
+
+summary(fm5)
+```
+
+```{r}
+par(mfrow = c(1, 2))
+plot(resid(fm5) ~ hops.subset$temperature)
+abline(h = 0, lty = "dotted")
+
+plot(resid(fm5) ~ hops.subset$sunshine)
+abline(h = 0, lty = "dotted")
+```
+
+```{r}
+fm6 <- lm(yield ~ temperature + sunshine, data = hops.subset)
+anova(fm6, fm5)
+```
