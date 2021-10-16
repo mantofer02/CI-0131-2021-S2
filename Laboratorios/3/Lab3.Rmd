@@ -21,8 +21,9 @@ plot(weight ~ height, data = body)
 abline(slr1, col = "red")
 ```
 
-**Describa: ¿Cómo le parece que le presenta el gráfico resultante (tendencias)?**
-No parece significativa por que los valores entorno a la línea de regresión no parecen poder
+**Describa: ¿Cómo le parece que le presenta el gráfico resultante (tendencias)?** No parece significativa porque los valores entorno a la línea de regresión no parecen poder \
+
+"no parece seguir ningún patrón, como se nota, existen bastantes datos con valores residuales altos y bajos, lo cual indica que existe un error significativo al aproximar el valor de esos valores, con lo cual el supuesto de que existe una relación lineal entre las variables de este SLR puede que sea falso."
 
 ```{r}
 plot(x = fitted(slr1), y = resid(slr1), xlab = "Fitted values", ylab = "Residuals")
@@ -33,17 +34,30 @@ abline(h = 0, lty = "dashed")
 qqnorm(y = resid(slr1));qqline(y = resid(slr1))
 ```
 
-**¿Qué le parece el gráfico QQ? ¿Existe normalidad?
-¿Existen datos atípicos? Justifique su respuesta con base en sus observaciones.**
+**¿Qué le parece el gráfico QQ? ¿Existe normalidad? ¿Existen datos atípicos? Justifique su respuesta con base en sus observaciones.**
 
-Sí se ajusta la recta excepto en los extremos,
-
-El intercepto provoca problemos en los extremos.
+Sí se ajusta la recta excepto en los extremos donde los residuos no se compartan normalmente, esto puede pasar por el intercepto que provoca problemos en los extremos.
 
 ```{r}
 par(mfrow=c(2,2))
 plot(slr1)
 ```
+
+**Responda los puntos a, b y c. Justifique sus respuestas.**
+
+Observe el graphic: Standardized residuals vs Leverage. Con respecto a los puntos 349, 124 y 474, analice lo siguiente:
+
+a\. ¿Este conjunto de datos cuenta con puntos de apalancamiento?
+
+Parece que sí, hacia la derecha en el eje x del gráfico se puede notar que existe algunos puntos de estos.
+
+b\. ¿Son estos puntos 349, 124 y 474 puntos de apalancamiento?
+
+Los puntos 124 y 474 parecen que no, dado que su posición en el gráfico es bastante cercana a cero, sin embargo, el punto 349 concerva una posición bastante más hacia la derecha lo cual indica que es un punto de apalancamiento.
+
+c\. ¿Puede usted decir a partir del gráfico de Standardized residuals vs Leverage si existe homocedasticidad?
+
+No, a pesar de que el eje y (eje del Standardized residuals) nos indique qué tanto diferencia haya entre los valores observados y esperados sería mejor utilizar otro tipo de gráfico que permita mostrar ese tipo de información.
 
 ```{r}
 hops <- read.table("hops.txt", header = TRUE)
