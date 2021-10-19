@@ -21,7 +21,7 @@ plot(weight ~ height, data = body)
 abline(slr1, col = "red")
 ```
 
-**Describa: ¿Cómo le parece que le presenta el gráfico resultante (tendencias)?** No parece significativa porque los valores entorno a la línea de regresión no parecen poder \
+**Describa: ¿Cómo le parece que le presenta el gráfico resultante (tendencias)?** No parece significativa porque los valores entorno a la línea de regresión no parecen poder\
 
 "no parece seguir ningún patrón, como se nota, existen bastantes datos con valores residuales altos y bajos, lo cual indica que existe un error significativo al aproximar el valor de esos valores, con lo cual el supuesto de que existe una relación lineal entre las variables de este SLR puede que sea falso."
 
@@ -77,6 +77,11 @@ tail(hops)
 par(mfrow = c(1, 2))
 plot(yield ~ temperature, data = hops)
 plot(yield ~ sunshine, data = hops)
+
+par(mfrow = c(1, 3))
+boxplot(yield~variety,data=hops)
+boxplot(temperature~variety,data=hops)
+
 ```
 
 ```{r}
@@ -166,4 +171,5 @@ abline(h = 0, lty = "dotted")
 ```{r}
 fm6 <- lm(yield ~ temperature + sunshine, data = hops.subset)
 anova(fm6, fm5)
+summary(fm6)
 ```
