@@ -81,6 +81,7 @@ plot(yield ~ sunshine, data = hops)
 par(mfrow = c(1, 3))
 boxplot(yield~variety,data=hops)
 boxplot(temperature~variety,data=hops)
+boxplot(sunshine~variety,data=hops)
 
 ```
 
