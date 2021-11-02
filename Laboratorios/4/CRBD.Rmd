@@ -30,6 +30,10 @@ hardness$Hardness)
 
 ```
 
+Parece ser que la dureza de la punta 4 es superior a todas las demás,
+
+Por otra parte, el cupón si afecta la dureza de cada punta , debido a que fuera de la punta 4, se observa que cada punta puede verse afectada de forma distinta por la dureza de cada cupón.
+
 Boxplots
 
 ```{r}
@@ -37,15 +41,45 @@ boxplot(hardness$Hardness ~ hardness$Tip_Type)
 boxplot(hardness$Hardness ~ hardness$Test_Coupon)
 ```
 
+a)  
+
+Como se observa en el gráfico anterior, las puntas de tipo 4 parecen nuevamente ser que tienen más dureza que las demás.
+
+La punta 3, por otra parte parece ser la que tiene menos dureza. No obstante medianas de las 3 puntas (1 al 3) son similares.
+
+Por último arece ser que la punta 3, presenta menos variabilidad, y donde la punta 2 es la que presenta más variabilidad, teniendo incluso valores que superan la mediana.
+
+b)  
+
+Se observa que el cupón 4 es usualmente más fuerte al tener una mediana mayor que la de los demás, en donde incluso su mínimo es muy cercano a la mediana del otro cupón que le continúa en dureza.
+
+El cupón 1 parece ser quien brinda menor dureza, al tener una mediana menor que la de los demás.
+
+Por otra parte los cupones parecen tener una relación de orden, debido a que como se va aumentando el cupón en su número, mayor es la dureza , esto se observa por sus mediana.
+
 ANOVA
 
 ```{r}
 anova(aov(hardness$Hardness ~ factor(hardness$Tip_Type) + factor(hardness$Test_Coupon)))
 
+
+```
+
+FALTA ANALIZAR QUE ES F
+
+```{r}
 fit <- aov(hardness$Hardness ~ factor(hardness$Tip_Type) + factor(hardness$Test_Coupon))
 
 TukeyHSD(fit,
 which= "factor(hardness$Tip_Type)",
+ordered=TRUE)
+```
+
+Se denota que la punta 4 es diferente a las demás puntas y dado que este tenía media mayor que la de los demás, se determina que el mismo tiene mayor dureza que las demás puntas.
+
+```{r}
+TukeyHSD(fit,
+which= "factor(hardness$Test_Coupon)",
 ordered=TRUE)
 ```
 
