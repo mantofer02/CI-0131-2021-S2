@@ -100,13 +100,17 @@ plot(lm(hardness$Hardness ~ factor(hardness$Tip_Type) + factor(hardness$Test_Cou
 
 Respuesta 1.
 
-Se espera que esto sea así debido a que cada observación cumpla que independiente una de otra.
+En el gráfico Fitted Values vs Residuals, observamos que no existe un patrón definido, esto es esperado
+porque existe independencia estadística entre los residuales (un residual no depende del otro). Explique
+porque espera usted que esto sea algo esperado y adecuado en un conjunto de datos normalmente distribuido
 
-Por otra parte, se considera que esto es adecuado en un conjuntos de datos normalmente distribuido por que existe homocedasticidad
+Se espera que esto sea así debido a que cada observación cumpla que una observación sea independiente una de otra. Por otra parte, se considera que esto es adecuado en un conjuntos de datos normalmente distribuido por que existe homocedasticidad, es decir que la varianza de los residuales es muy parecida para cada observación (observese que la escala va de -0.10 a 0.05)
+
+.
 
 Respuesta 2.
 
-Sí se observa una aproximación a la distribución normal , no obstante esto al ser una prueba de estadística descriptiva debe de realizar una prueba de **Shapiro-Wilk's**, para verificar la normalidad de los datos. ¿Preguntar como hacer prueba de shapiro o otra ? (Tirarle los intervalos )
+Sí se observa existe una aproximación a la distribución normal debido a que los datos se acerca a la recta de la normal, no obstante esto al ser una prueba de estadística descriptiva podría pensarse en hacer una prueba de Shapiro-Wilk's, pero esto no es posible por la poca cantidad de datos que se tienen, por lo tanto una forma también de comprobar dicha normalidad sería realizar una graficación utilizando intervalos de confianza donde se vea si los datos se salen de estos intervalos.
 
 Respuesta 3.
 
@@ -131,14 +135,30 @@ interaction.plot(intensity$Filter,
                  intensity$Intensity)
 ```
 
+Parece ser que existe un efecto en el filtro y el ruido para obtener el grado de intensidad que se capta.
+
 ```{r}
 boxplot(intensity$Intensity ~ intensity$Ground)
 boxplot(intensity$Intensity ~ intensity$Filter)
 ```
 
+Filter:
+
+Se observa que parece existir una diferencia entre el filtro uno y el 2, donde nuevamente parece que el filtro 1 logra captar mayor intensidad que el filtro dos, esto ya se observo con el diagrama anterior de interacción. Con respecto a la variabilidad entre ambos filtros parece ser que ambos tienen una variabilidad muy similar.
+
+Ground:
+
+Parece ser que a menor ruido se obtiene menor grado de intensidad, pero a su vez se observa que existe una menor variablidad.
+
+Ahora bien a mayor cantidad de ruido parece ser que existe mayor grado de intensidad, pero a su vez existe una mayor variabilidad.
+
+Para
+
 ```{r}
 anova(aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter)))
 ```
+
+Se observa que existe una diferencia en medias significativa tanto para el ruido como para el filtro, por lo tanto se confirma que existe una diferencia entre la selección de un filtro o bien la cantidad de ruido que se tenga. Por lo tanto se procede a hacer una prueba de tukey para determinar donde radican estas diferencias
 
 ```{r}
 fit <- aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter))
@@ -147,6 +167,8 @@ TukeyHSD(fit,
 which= "factor(intensity$Ground)",
 ordered=TRUE)
 ```
+
+Se determina que existe una diferencia para captar el grado de intensidad si se tiene una cantidad de ruido alta contra una de ruido baja.
 
 ```{r}
 TukeyHSD(fit,
@@ -162,7 +184,13 @@ summary(aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Fi
 summary(lm(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter)))
 ```
 
+Se determina con grados de significancia que tener un ruido bajo disminuye la intensidad en un 9.125 , por otra parte cuando se utiliza el filtro 2 se tendrá una disminución intensidad de 13.333, donde en general se considera que los grados de intensidad inician en 105.917.
+
 ```{r}
 par(mfrow=c(2,2))
 plot(lm(intensity$Intensity ~ factor(intensity$Filter) + factor(intensity$Ground)))
 ```
+
+Los datos no presentan un comportamiento homogeneo
+
+Por otra parte, los valores parecen comportarse correctamente a excepción de los valores 16,23,24
