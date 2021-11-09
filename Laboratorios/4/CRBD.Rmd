@@ -97,3 +97,72 @@ summary(lm(hardness$Hardness ~ factor(hardness$Tip_Type) + factor(hardness$Test_
 par(mfrow=c(2,2))
 plot(lm(hardness$Hardness ~ factor(hardness$Tip_Type) + factor(hardness$Test_Coupon)))
 ```
+
+Respuesta 1.
+
+Se espera que esto sea así debido a que cada observación cumpla que independiente una de otra.
+
+Por otra parte, se considera que esto es adecuado en un conjuntos de datos normalmente distribuido por que existe homocedasticidad
+
+Respuesta 2.
+
+Sí se observa una aproximación a la distribución normal , no obstante esto al ser una prueba de estadística descriptiva debe de realizar una prueba de **Shapiro-Wilk's**, para verificar la normalidad de los datos. ¿Preguntar como hacer prueba de shapiro o otra ? (Tirarle los intervalos )
+
+Respuesta 3.
+
+Parece ser heterogenea debido a que el modelo parece que unicamente se ajuste bien para el tipo de punta 4, mientras que en las demás puntas los residuales son variados e inconstantes con respecto al modelo.
+
+Esto se considera inadecuado por que parece que el modelo solo se ajusta a un tipo de punta , donde debería de más bien ajustarse a cualquier tipo de punta \* Pregunta
+
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**INTENSITY**
+
+```{r}
+
+library(ACSWR)
+data("intensity")
+intensity
+```
+
+```{r}
+interaction.plot(intensity$Filter,
+                 intensity$Ground,
+                 intensity$Intensity)
+```
+
+```{r}
+boxplot(intensity$Intensity ~ intensity$Ground)
+boxplot(intensity$Intensity ~ intensity$Filter)
+```
+
+```{r}
+anova(aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter)))
+```
+
+```{r}
+fit <- aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter))
+
+TukeyHSD(fit,
+which= "factor(intensity$Ground)",
+ordered=TRUE)
+```
+
+```{r}
+TukeyHSD(fit,
+which= "factor(intensity$Filter)",
+ordered=TRUE)
+```
+
+```{r}
+summary(aov(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter)))
+```
+
+```{r}
+summary(lm(intensity$Intensity ~ factor(intensity$Ground) + factor(intensity$Filter)))
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm(intensity$Intensity ~ factor(intensity$Filter) + factor(intensity$Ground)))
+```
