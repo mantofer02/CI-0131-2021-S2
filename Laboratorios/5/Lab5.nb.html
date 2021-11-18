@@ -219,26 +219,102 @@ pre code {
 <p>Try executing this chunk by clicking the <em>Run</em> button within the chunk or by placing your cursor inside it and pressing <em>Ctrl+Shift+Enter</em>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5cbnlpZWxkID0gcmVhZC5jc3YoXCJGYWN0b3JpYWxEZXNpZ24uY3N2XCIsXG4gICAgICAgICAgICAgICAgIGhlYWRlciA9IFQsXG4gICAgICAgICAgICAgICAgIGVuY29kaW5nID0gXCJVVEYtOFwiKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5cbnlpZWxkID0gcmVhZC5jc3YoXCJGYWN0b3JpYWxEZXNpZ24uY3N2XCIsXG4gICAgICAgICAgICAgICAgIGhlYWRlciA9IFQsXG4gICAgICAgICAgICAgICAgIGVuY29kaW5nID0gXCJVVEYtOFwiKVxueWllbGQgPC0geWllbGRbLTFdXG5wbG90KHlpZWxkKVxueWllbGRcbmBgYCJ9 -->
 <pre class="r"><code>
 
 yield = read.csv(&quot;FactorialDesign.csv&quot;,
                  header = T,
-                 encoding = &quot;UTF-8&quot;)</code></pre>
+                 encoding = &quot;UTF-8&quot;)
+yield &lt;- yield[-1]
+plot(yield)
+yield</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZyBpbiBmaWxlKGZpbGUsIFwicnRcIikgOlxuICBjYW5ub3Qgb3BlbiBmaWxlICdGYWN0b3JpYWxEZXNpZ24uY3N2JzogTm8gc3VjaCBmaWxlIG9yIGRpcmVjdG9yeVxuRXJyb3IgaW4gZmlsZShmaWxlLCBcInJ0XCIpIDogY2Fubm90IG9wZW4gdGhlIGNvbm5lY3Rpb25cbiJ9 -->
-<pre><code>Warning in file(file, &quot;rt&quot;) :
-  cannot open file &#39;FactorialDesign.csv&#39;: No such file or directory
-Error in file(file, &quot;rt&quot;) : cannot open the connection</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Add a new chunk by clicking the <em>Insert Chunk</em> button on the toolbar or by pressing <em>Ctrl+Alt+I</em>.</p>
-<p>When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the <em>Preview</em> button or press <em>Ctrl+Shift+K</em> to preview the HTML file).</p>
-<p>The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike <em>Knit</em>, <em>Preview</em> does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFyKG1mcm93PWMoMiwyKSlcbmludGVyYWN0aW9uLnBsb3QoeWllbGQkVGVtcCx5aWVsZCRDb25jLHlpZWxkJFlpZWxkKVxuaW50ZXJhY3Rpb24ucGxvdCh5aWVsZCRUZW1wLHlpZWxkJENhdGFseXN0LHlpZWxkJFlpZWxkKVxuaW50ZXJhY3Rpb24ucGxvdCh5aWVsZCRDb25jLHlpZWxkJENhdGFseXN0LHlpZWxkJFlpZWxkKSBcbnBhcihtZnJvdz1jKDEsMSkpXG5cbmBgYCJ9 -->
+<pre class="r"><code>par(mfrow=c(2,2))
+interaction.plot(yield$Temp,yield$Conc,yield$Yield)
+interaction.plot(yield$Temp,yield$Catalyst,yield$Yield)
+interaction.plot(yield$Conc,yield$Catalyst,yield$Yield) 
+par(mfrow=c(1,1))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG0xID0gbG0oWWllbGQgfiAuLCBkYXRhID0geWllbGQpXG5zdW1tYXJ5KGxtMSlcbmBgYCJ9 -->
+<pre class="r"><code>lm1 = lm(Yield ~ ., data = yield)
+summary(lm1)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG0yID0gbG0oWWllbGQgfiAuXjIsIGRhdGEgPSB5aWVsZClcbnN1bW1hcnkobG0yKVxuYGBgIn0= -->
+<pre class="r"><code>lm2 = lm(Yield ~ .^2, data = yield)
+summary(lm2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Duda, Conc:Catalyst?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYW5vdmEobG0xLCBsbTIpXG5gYGAifQ== -->
+<pre class="r"><code>anova(lm1, lm2)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Se establece estadísticamente que existe una diferencia en la determinación de la variable de respuesta <em>Yield</em> cuando las variables interactúan entre sí.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG0zID0gbG0oWWllbGQgfiAuXjMsIGRhdGEgPSB5aWVsZClcbnN1bW1hcnkobG0zKVxuXG5gYGAifQ== -->
+<pre class="r"><code>lm3 = lm(Yield ~ .^3, data = yield)
+summary(lm3)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>El intercepto qué?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubG00ID0gbG0oWWllbGQgfiBDb25jICsgVGVtcCpDYXRhbHlzdCwgZGF0YSA9IHlpZWxkKVxuc3VtbWFyeShsbTQpIFxuYGBgIn0= -->
+<pre class="r"><code>lm4 = lm(Yield ~ Conc + Temp*Catalyst, data = yield)
+summary(lm4) </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShBQ1NXUilcbmRhdGEoYm90dGxpbmcpXG5ib3R0bGluZ1xuXG5wYXIobWZyb3c9YygyLDIpKVxuaW50ZXJhY3Rpb24ucGxvdChib3R0bGluZyRDYXJib25hdGlvbixib3R0bGluZyRQcmVzc3VyZSxib3R0bGluZyREZXZpYXRpb24pXG5pbnRlcmFjdGlvbi5wbG90KGJvdHRsaW5nJFByZXNzdXJlLGJvdHRsaW5nJFNwZWVkLGJvdHRsaW5nJERldmlhdGlvbilcbmludGVyYWN0aW9uLnBsb3QoYm90dGxpbmckQ2FyYm9uYXRpb24sYm90dGxpbmckU3BlZWQsYm90dGxpbmckRGV2aWF0aW9uKSBcbnBhcihtZnJvdz1jKDEsMSkpXG5cbnN1bW1hcnkoYm90dGxpbmcuYW92IDwtIGFvdihEZXZpYXRpb25+Lixib3R0bGluZykpXG5zdW1tYXJ5KGJvdHRsaW5nLmFvdiA8LSBhb3YoRGV2aWF0aW9ufi5eMixib3R0bGluZykpXG5zdW1tYXJ5KGJvdHRsaW5nLmFvdiA8LSBhb3YoRGV2aWF0aW9ufi5eMyxib3R0bGluZykpXG4jIEVxdWl2YWxlbnRlIGEgcmVhbGl6YXIgbGFzIGludGVyYWNjaW9uZXMgbWFudWFsbW5ldGUgOilcbnN1bW1hcnkoYW92KERldmlhdGlvbn4gQ2FyYm9uYXRpb24gKyBQcmVzc3VyZSArIFNwZWVkKyAoQ2FyYm9uYXRpb24qUHJlc3N1cmUpK1xuICAgICAgICAgICAgICAoQ2FyYm9uYXRpb24qU3BlZWQpKyhQcmVzc3VyZSpTcGVlZCkrKENhcmJvbmF0aW9uKlNwZWVkKlByZXNzdXJlKSxkYXRhPWJvdHRsaW5nKSlcblxuYGBgIn0= -->
+<pre class="r"><code>library(ACSWR)
+data(bottling)
+bottling
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLg0KDQpUcnkgZXhlY3V0aW5nIHRoaXMgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpSdW4qIGJ1dHRvbiB3aXRoaW4gdGhlIGNodW5rIG9yIGJ5IHBsYWNpbmcgeW91ciBjdXJzb3IgaW5zaWRlIGl0IGFuZCBwcmVzc2luZyAqQ3RybCtTaGlmdCtFbnRlciouDQoNCmBgYHtyfQ0KDQoNCnlpZWxkID0gcmVhZC5jc3YoIkZhY3RvcmlhbERlc2lnbi5jc3YiLA0KICAgICAgICAgICAgICAgICBoZWFkZXIgPSBULA0KICAgICAgICAgICAgICAgICBlbmNvZGluZyA9ICJVVEYtOCIpDQoNCg0KeWllbGQgPC0geWllbGRbLTFdDQpwbG90KHlpZWxkKQ0KDQpgYGANCg0KQWRkIGEgbmV3IGNodW5rIGJ5IGNsaWNraW5nIHRoZSAqSW5zZXJ0IENodW5rKiBidXR0b24gb24gdGhlIHRvb2xiYXIgb3IgYnkgcHJlc3NpbmcgKkN0cmwrQWx0K0kqLg0KDQpXaGVuIHlvdSBzYXZlIHRoZSBub3RlYm9vaywgYW4gSFRNTCBmaWxlIGNvbnRhaW5pbmcgdGhlIGNvZGUgYW5kIG91dHB1dCB3aWxsIGJlIHNhdmVkIGFsb25nc2lkZSBpdCAoY2xpY2sgdGhlICpQcmV2aWV3KiBidXR0b24gb3IgcHJlc3MgKkN0cmwrU2hpZnQrSyogdG8gcHJldmlldyB0aGUgSFRNTCBmaWxlKS4NCg0KVGhlIHByZXZpZXcgc2hvd3MgeW91IGEgcmVuZGVyZWQgSFRNTCBjb3B5IG9mIHRoZSBjb250ZW50cyBvZiB0aGUgZWRpdG9yLiBDb25zZXF1ZW50bHksIHVubGlrZSAqS25pdCosICpQcmV2aWV3KiBkb2VzIG5vdCBydW4gYW55IFIgY29kZSBjaHVua3MuIEluc3RlYWQsIHRoZSBvdXRwdXQgb2YgdGhlIGNodW5rIHdoZW4gaXQgd2FzIGxhc3QgcnVuIGluIHRoZSBlZGl0b3IgaXMgZGlzcGxheWVkLg0K</div>
+par(mfrow=c(2,2))
+interaction.plot(bottling$Carbonation,bottling$Pressure,bottling$Deviation)
+interaction.plot(bottling$Pressure,bottling$Speed,bottling$Deviation)
+interaction.plot(bottling$Carbonation,bottling$Speed,bottling$Deviation) 
+par(mfrow=c(1,1))
+
+summary(bottling.aov &lt;- aov(Deviation~.,bottling))
+summary(bottling.aov &lt;- aov(Deviation~.^2,bottling))
+summary(bottling.aov &lt;- aov(Deviation~.^3,bottling))
+# Equivalente a realizar las interacciones manualmnete :)
+summary(aov(Deviation~ Carbonation + Pressure + Speed+ (Carbonation*Pressure)+
+              (Carbonation*Speed)+(Pressure*Speed)+(Carbonation*Speed*Pressure),data=bottling))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Son diferentes porque por lo menos para un factor hay tres niveles?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-chunk-end -->
+
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIGlzIGFuIFtSIE1hcmtkb3duXShodHRwOi8vcm1hcmtkb3duLnJzdHVkaW8uY29tKSBOb3RlYm9vay4gV2hlbiB5b3UgZXhlY3V0ZSBjb2RlIHdpdGhpbiB0aGUgbm90ZWJvb2ssIHRoZSByZXN1bHRzIGFwcGVhciBiZW5lYXRoIHRoZSBjb2RlLg0KDQpUcnkgZXhlY3V0aW5nIHRoaXMgY2h1bmsgYnkgY2xpY2tpbmcgdGhlICpSdW4qIGJ1dHRvbiB3aXRoaW4gdGhlIGNodW5rIG9yIGJ5IHBsYWNpbmcgeW91ciBjdXJzb3IgaW5zaWRlIGl0IGFuZCBwcmVzc2luZyAqQ3RybCtTaGlmdCtFbnRlciouDQoNCmBgYHtyfQ0KDQoNCnlpZWxkID0gcmVhZC5jc3YoIkZhY3RvcmlhbERlc2lnbi5jc3YiLA0KICAgICAgICAgICAgICAgICBoZWFkZXIgPSBULA0KICAgICAgICAgICAgICAgICBlbmNvZGluZyA9ICJVVEYtOCIpDQp5aWVsZCA8LSB5aWVsZFstMV0NCnBsb3QoeWllbGQpDQp5aWVsZA0KYGBgDQoNCmBgYHtyfQ0KcGFyKG1mcm93PWMoMiwyKSkNCmludGVyYWN0aW9uLnBsb3QoeWllbGQkVGVtcCx5aWVsZCRDb25jLHlpZWxkJFlpZWxkKQ0KaW50ZXJhY3Rpb24ucGxvdCh5aWVsZCRUZW1wLHlpZWxkJENhdGFseXN0LHlpZWxkJFlpZWxkKQ0KaW50ZXJhY3Rpb24ucGxvdCh5aWVsZCRDb25jLHlpZWxkJENhdGFseXN0LHlpZWxkJFlpZWxkKSANCnBhcihtZnJvdz1jKDEsMSkpDQoNCmBgYA0KDQpgYGB7cn0NCmxtMSA9IGxtKFlpZWxkIH4gLiwgZGF0YSA9IHlpZWxkKQ0Kc3VtbWFyeShsbTEpDQpgYGANCg0KYGBge3J9DQpsbTIgPSBsbShZaWVsZCB+IC5eMiwgZGF0YSA9IHlpZWxkKQ0Kc3VtbWFyeShsbTIpDQpgYGANCg0KRHVkYSwgQ29uYzpDYXRhbHlzdD8NCg0KYGBge3J9DQphbm92YShsbTEsIGxtMikNCmBgYA0KDQpTZSBlc3RhYmxlY2UgZXN0YWTDrXN0aWNhbWVudGUgcXVlIGV4aXN0ZSB1bmEgZGlmZXJlbmNpYSBlbiBsYSBkZXRlcm1pbmFjacOzbiBkZSBsYSB2YXJpYWJsZSBkZSByZXNwdWVzdGEgKllpZWxkKiBjdWFuZG8gbGFzIHZhcmlhYmxlcyBpbnRlcmFjdMO6YW4gZW50cmUgc8OtLg0KDQpgYGB7cn0NCmxtMyA9IGxtKFlpZWxkIH4gLl4zLCBkYXRhID0geWllbGQpDQpzdW1tYXJ5KGxtMykNCg0KYGBgDQoNCkVsIGludGVyY2VwdG8gcXXDqT8NCg0KYGBge3J9DQpsbTQgPSBsbShZaWVsZCB+IENvbmMgKyBUZW1wKkNhdGFseXN0LCBkYXRhID0geWllbGQpDQpzdW1tYXJ5KGxtNCkgDQpgYGANCg0KYGBge3J9DQpsaWJyYXJ5KEFDU1dSKQ0KZGF0YShib3R0bGluZykNCmJvdHRsaW5nDQoNCnBhcihtZnJvdz1jKDIsMikpDQppbnRlcmFjdGlvbi5wbG90KGJvdHRsaW5nJENhcmJvbmF0aW9uLGJvdHRsaW5nJFByZXNzdXJlLGJvdHRsaW5nJERldmlhdGlvbikNCmludGVyYWN0aW9uLnBsb3QoYm90dGxpbmckUHJlc3N1cmUsYm90dGxpbmckU3BlZWQsYm90dGxpbmckRGV2aWF0aW9uKQ0KaW50ZXJhY3Rpb24ucGxvdChib3R0bGluZyRDYXJib25hdGlvbixib3R0bGluZyRTcGVlZCxib3R0bGluZyREZXZpYXRpb24pIA0KcGFyKG1mcm93PWMoMSwxKSkNCg0Kc3VtbWFyeShib3R0bGluZy5hb3YgPC0gYW92KERldmlhdGlvbn4uLGJvdHRsaW5nKSkNCnN1bW1hcnkoYm90dGxpbmcuYW92IDwtIGFvdihEZXZpYXRpb25+Ll4yLGJvdHRsaW5nKSkNCnN1bW1hcnkoYm90dGxpbmcuYW92IDwtIGFvdihEZXZpYXRpb25+Ll4zLGJvdHRsaW5nKSkNCiMgRXF1aXZhbGVudGUgYSByZWFsaXphciBsYXMgaW50ZXJhY2Npb25lcyBtYW51YWxtbmV0ZSA6KQ0Kc3VtbWFyeShhb3YoRGV2aWF0aW9ufiBDYXJib25hdGlvbiArIFByZXNzdXJlICsgU3BlZWQrIChDYXJib25hdGlvbipQcmVzc3VyZSkrDQogICAgICAgICAgICAgIChDYXJib25hdGlvbipTcGVlZCkrKFByZXNzdXJlKlNwZWVkKSsoQ2FyYm9uYXRpb24qU3BlZWQqUHJlc3N1cmUpLGRhdGE9Ym90dGxpbmcpKQ0KDQpgYGANCg0KU29uIGRpZmVyZW50ZXMgcG9ycXVlIHBvciBsbyBtZW5vcyBwYXJhIHVuIGZhY3RvciBoYXkgdHJlcyBuaXZlbGVzPw0KDQpgYGB7cn0NCg0KYGBgDQo=</div>
 
 
 

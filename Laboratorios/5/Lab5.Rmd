@@ -24,20 +24,26 @@ interaction.plot(yield$Temp,yield$Conc,yield$Yield)
 interaction.plot(yield$Temp,yield$Catalyst,yield$Yield)
 interaction.plot(yield$Conc,yield$Catalyst,yield$Yield) 
 par(mfrow=c(1,1))
-summary(lm1)
+
 ```
 
 ```{r}
 lm1 = lm(Yield ~ ., data = yield)
 summary(lm1)
+```
+
+```{r}
 lm2 = lm(Yield ~ .^2, data = yield)
 summary(lm2)
-
 ```
+
+Duda, Conc:Catalyst?
 
 ```{r}
 anova(lm1, lm2)
 ```
+
+Se establece estadísticamente que existe una diferencia en la determinación de la variable de respuesta *Yield* cuando las variables interactúan entre sí.
 
 ```{r}
 lm3 = lm(Yield ~ .^3, data = yield)
@@ -45,14 +51,35 @@ summary(lm3)
 
 ```
 
+El intercepto qué?
+
 ```{r}
 lm4 = lm(Yield ~ Conc + Temp*Catalyst, data = yield)
 summary(lm4) 
+```
+
+```{r}
+library(ACSWR)
+data(bottling)
+bottling
+
+par(mfrow=c(2,2))
+interaction.plot(bottling$Carbonation,bottling$Pressure,bottling$Deviation)
+interaction.plot(bottling$Pressure,bottling$Speed,bottling$Deviation)
+interaction.plot(bottling$Carbonation,bottling$Speed,bottling$Deviation) 
+par(mfrow=c(1,1))
+
+summary(bottling.aov <- aov(Deviation~.,bottling))
+summary(bottling.aov <- aov(Deviation~.^2,bottling))
+summary(bottling.aov <- aov(Deviation~.^3,bottling))
+# Equivalente a realizar las interacciones manualmnete :)
+summary(aov(Deviation~ Carbonation + Pressure + Speed+ (Carbonation*Pressure)+
+              (Carbonation*Speed)+(Pressure*Speed)+(Carbonation*Speed*Pressure),data=bottling))
 
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Son diferentes porque por lo menos para un factor hay tres niveles?
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r}
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```
