@@ -13,10 +13,41 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 yield = read.csv("FactorialDesign.csv",
                  header = T,
                  encoding = "UTF-8")
-
-
 yield <- yield[-1]
 plot(yield)
+yield
+```
+
+```{r}
+par(mfrow=c(2,2))
+interaction.plot(yield$Temp,yield$Conc,yield$Yield)
+interaction.plot(yield$Temp,yield$Catalyst,yield$Yield)
+interaction.plot(yield$Conc,yield$Catalyst,yield$Yield) 
+par(mfrow=c(1,1))
+summary(lm1)
+```
+
+```{r}
+lm1 = lm(Yield ~ ., data = yield)
+summary(lm1)
+lm2 = lm(Yield ~ .^2, data = yield)
+summary(lm2)
+
+```
+
+```{r}
+anova(lm1, lm2)
+```
+
+```{r}
+lm3 = lm(Yield ~ .^3, data = yield)
+summary(lm3)
+
+```
+
+```{r}
+lm4 = lm(Yield ~ Conc + Temp*Catalyst, data = yield)
+summary(lm4) 
 
 ```
 
