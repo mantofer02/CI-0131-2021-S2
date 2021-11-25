@@ -98,7 +98,7 @@ dfDolars
 dfFinal%>%group_by(state)%>%summarise(Proporcion = percent((length(state)/totalObservation),accuracy = .11))
 
 
-dfFinal <- dfFinal%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)
+#dfFinal <- dfFinal%>%select(ID,category,main_category,deadline,launched,state,usd_goal_real)
 
 
 dfFinal <- dfFinal%>%
@@ -178,7 +178,6 @@ grid.arrange(fallos,aciertos, ncol=1)
 # Parte 10. Gráfico de dispersión por categorías con división de 100.000 dólares
 
 ```{r}
-
 dfCategorias<-dfFinal%>%filter(main_category == c('Film & Video','Music','Publishing'))
 
 
@@ -196,4 +195,114 @@ ggplot() +
 
 
 grid.arrange(fallos,aciertos, ncol=1)
+```
+
+```{r}
+write.table(dfCategorias,sep=",",file="df.csv")
+
+
+```
+
+```{r}
+
+data <- as_tibble(read.csv(file = 'dataResumida.csv'))
+head(data)
+
+```
+
+```{r}
+dfCategorias<-data%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+fallos <-dfCategorias%>%
+  filter(successful == 0)%>%
+ggplot() +
+  geom_point(aes(x=backers, y=days),color ="#F8766D")+
+  facet_wrap(. ~ main_category,ncol = 3)+ xlim(0,1000)+ labs(x = "Backers", y = "Días")
+
+aciertos <-dfCategorias%>%
+  filter(successful == 1)%>%
+ggplot() +
+  geom_point(aes(x=backers, y=days),color ="#00BFC4")+
+  facet_wrap(. ~ main_category,ncol = 3)+xlim(0,1000)+ labs(x = "Backers", y = "Días")
+
+grid.arrange(fallos,aciertos, ncol=1)
+```
+
+```{r}
+fallos <-dfCategorias%>%
+  filter(successful == 0)%>%
+ggplot() +
+  geom_point(aes(x=backers, y=usd_pledged_real),color ="#F8766D")+
+  facet_wrap(. ~ main_category,ncol = 3)+ylim(0,120000)+ labs(x = "Backers", y = "Recaudado")
+
+aciertos <-dfCategorias%>%
+  filter(successful == 1)%>%
+ggplot() +
+  geom_point(aes(x=backers, y=usd_pledged_real),color ="#00BFC4")+
+  facet_wrap(. ~ main_category,ncol = 3)+xlim(0,1000)+ylim(0,120000)+  labs(x = "Backers", y = "Recaudado")
+
+grid.arrange(fallos,aciertos, ncol=1)
+```
+
+```{r}
+fallos <-dfCategorias%>%
+  filter(successful == 0)%>%
+ggplot() +
+  geom_point(aes(x=us_origin, y=usd_currency),color ="#F8766D")+
+  facet_wrap(. ~ main_category,ncol = 3)+ labs(x = "Recaudado", y = "Meta")
+
+aciertos <-dfCategorias%>%
+  filter(successful == 1)%>%
+ggplot() +
+  geom_point(aes(x=us_origin, y=usd_currency),color ="#00BFC4")+
+  facet_wrap(. ~ main_category,ncol = 3)+ labs(x = "Recaudado", y = "Meta")
+
+grid.arrange(fallos,aciertos, ncol=1)
+```
+
+```{r}
+dfCategorias<-data%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+dfCategorias$us_origin <-factor(dfCategorias$us_origin)
+dfCategorias$usd_currency <-factor(dfCategorias$usd_currency)
+
+grafico <- dfCategorias %>%
+  ggplot(aes(x = "", fill = us_origin))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("País Origen") + 
+  facet_wrap(. ~ main_category,ncol=1) + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+
+grafico1 <- dfCategorias %>%
+  ggplot(aes(x = "", fill = usd_currency))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("Moneda") + 
+  facet_wrap(. ~ main_category,ncol=1) + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+
+grid.arrange(grafico1,grafico, ncol=2)
+```
+
+![](http://127.0.0.1:28101/chunk_output/s/2B009A36/ca39w8v7ac0ax/000029.png)
+
+```{r}
+library(tidyr) ; library(dplyr)
+statedf=data.frame(state=c('MD','MD','MD','NY','NY','NY'), week = 5:7) 
+memberdf=data.frame(memID = 1:15, state = c('MD','MD','NY','NY','MD'),
+              finalweek = c(3,3,5,3,3,5,3,5,3,5,6,5,2,3,5),
+              orders = c(1,2,3))
+
+counts <- memberdf %>%
+  mutate(lapsedweek = finalweek + 1) %>%
+  group_by(state, lapsedweek, orders) %>%
+  tally()
+counts <- counts %>% spread(orders, n, fill = 0)    
+out <- left_join(statedf, counts, by = c("state", "week" = "lapsedweek"))
+out[is.na(out)] <- 0 # convert rows with all NAs to 0s
+names(out)[3:5] <- paste0("order", names(out)[3:5]) # rename columns
+counts
 ```
