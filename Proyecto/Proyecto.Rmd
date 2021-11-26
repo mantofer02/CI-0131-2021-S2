@@ -290,6 +290,41 @@ grid.arrange(grafico1,grafico, ncol=2)
 ![](http://127.0.0.1:28101/chunk_output/s/2B009A36/ca39w8v7ac0ax/000029.png)
 
 ```{r}
+dfCategorias<-data%>%filter(main_category == c('Film & Video','Music','Publishing'))
+
+dfCategorias$us_origin <-factor(dfCategorias$us_origin)
+dfCategorias$usd_currency <-factor(dfCategorias$usd_currency)
+dfCategorias$successful <-factor(dfCategorias$successful)
+
+dfmoneda <- dfCategorias%>%filter(dfCategorias$us_origin == 1)
+dfNoMoneda <- dfCategorias%>%filter(dfCategorias$us_origin == 0)
+
+
+
+grafico<- dfmoneda %>%
+  ggplot(aes(x = "", fill = successful))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("Dólares Estadounidenses") + 
+  facet_wrap(. ~ main_category,ncol=1) + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+
+
+grafico1<- dfNoMoneda %>%
+  ggplot(aes(x = "", fill = successful))+
+     geom_bar(position = "fill", width = 1) + 
+   coord_polar(theta = "y") + 
+  xlab("") + 
+  ylab("Otra Moneda") + 
+  facet_wrap(. ~ main_category,ncol=1) + 
+  theme(panel.grid = element_blank(), axis.ticks = element_blank(), axis.text.x=element_blank(), panel.border = element_blank())
+
+
+grid.arrange(grafico1,grafico, ncol=2)
+```
+
+```{r}
 library(tidyr) ; library(dplyr)
 statedf=data.frame(state=c('MD','MD','MD','NY','NY','NY'), week = 5:7) 
 memberdf=data.frame(memID = 1:15, state = c('MD','MD','NY','NY','MD'),
